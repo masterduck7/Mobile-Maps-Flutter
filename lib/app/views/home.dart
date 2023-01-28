@@ -12,16 +12,13 @@ class MapsWidget extends StatefulWidget {
 }
 
 class _MapsWidgetState extends State<MapsWidget> {
+  static const double startLat = -33.418973;
+  static const double startLng = -70.603883;
+  static const double endLat = -33.421731;
+  static const double endLng = -70.557491;
+
   Future<List<LatLng>> _getMarkers() async {
     final OpenRouteService client = OpenRouteService(apiKey: '5b3ce3597851110001cf62488cc3fa394381496ebd8cf121dcf76d07');
-
-    // Example coordinates to test between
-    const double startLat = -33.418973;
-    const double startLng = -70.603883;
-    const double endLat = -33.421731;
-    const double endLng = -70.557491;
-
-    // Form Route between coordinates
     final List<ORSCoordinate> routeCoordinates = await client.directionsRouteCoordsGet(
       startCoordinate: const ORSCoordinate(latitude: startLat, longitude: startLng),
       endCoordinate: const ORSCoordinate(latitude: endLat, longitude: endLng),
@@ -32,33 +29,35 @@ class _MapsWidgetState extends State<MapsWidget> {
       points.add(LatLng(coordinate.latitude, coordinate.longitude));
     }
 
-    List<Marker> markers = routeCoordinates
-        .map((coordinate) =>
-        Marker(
-            point: LatLng(coordinate.latitude, coordinate.longitude),
-            builder: (ctx) => const FlutterLogo(
-              textColor: Colors.red,
-              key: ObjectKey(Colors.red),
-            )
-        )
-    ).toList();
-
     return points;
   }
 
   @override
   Widget build(BuildContext context) {
+    Marker origin = Marker(
+        point: LatLng(startLat, startLng),
+        builder: (ctx) => const FlutterLogo()
+    );
+
+    Marker destination = Marker(
+        point: LatLng(endLat, endLng),
+        builder: (ctx) => const FlutterLogo()
+    );
+
     return FutureBuilder(
       future: _getMarkers(),
       builder: (context,snapshot){
         if ( snapshot.data != null){
           List<LatLng> points = snapshot.data!;
           return Scaffold(
-            appBar: AppBar(title: const Text("Yes")),
+            appBar: AppBar(title: const Center(child: Text("Maps"))),
             body: FlutterMap(
                 options: MapOptions(center: LatLng(-33.420549, -70.581652)),
                 children: [
                   TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'dev.fleaflet.flutter_map.example',),
+                  MarkerLayer(
+                    markers: [origin, destination],
+                  ),
                   PolylineLayer(
                     polylineCulling: false,
                     polylines: [
@@ -70,7 +69,12 @@ class _MapsWidgetState extends State<MapsWidget> {
           );
         }
         else {
-          return const Text("no");
+          return Scaffold(
+            appBar: AppBar(title: const Center(child: Text("Maps"))),
+            body: const Center(
+              child: Text("Loading"),
+            ),
+          );
         }
       },
     );
