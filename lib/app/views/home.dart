@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:open_route_service/open_route_service.dart';
+import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 
 
@@ -32,6 +35,15 @@ class _MapsWidgetState extends State<MapsWidget> {
     return points;
   }
 
+  Future<LatLng> _fetchDirection(String address) async {
+    var response = await http.get(Uri.parse('https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf62488cc3fa394381496ebd8cf121dcf76d07&text=$address'));
+    var addressFetched = json.decode(response.body);
+    return LatLng(
+        addressFetched["features"][0]["geometry"]["coordinates"][1],
+        addressFetched["features"][0]["geometry"]["coordinates"][0]
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Marker origin = Marker(
@@ -45,6 +57,7 @@ class _MapsWidgetState extends State<MapsWidget> {
     );
 
     getDirections() {
+      //_fetchDirection("Pedro Montt 1100");
       setState(() {startLat = -33.452490; startLng = -70.667453;});
     }
 
