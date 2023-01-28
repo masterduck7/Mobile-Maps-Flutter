@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:open_route_service/open_route_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 class MapsWidget extends StatefulWidget {
@@ -24,7 +25,8 @@ class _MapsWidgetState extends State<MapsWidget> {
   double endLng = -70.557491;
 
   Future<List<LatLng>> _getMarkers() async {
-    final OpenRouteService client = OpenRouteService(apiKey: '5b3ce3597851110001cf62488cc3fa394381496ebd8cf121dcf76d07');
+    await dotenv.load(fileName: ".env");
+    final OpenRouteService client = OpenRouteService(apiKey: dotenv.env['OPEN_ROUTE_SERVICE_KEY']!);
     final List<ORSCoordinate> routeCoordinates = await client.directionsRouteCoordsGet(
       startCoordinate: ORSCoordinate(latitude: startLat, longitude: startLng),
       endCoordinate: ORSCoordinate(latitude: endLat, longitude: endLng),
@@ -39,7 +41,8 @@ class _MapsWidgetState extends State<MapsWidget> {
   }
 
   Future<LatLng> _fetchDirection(String address) async {
-    var response = await http.get(Uri.parse('https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf62488cc3fa394381496ebd8cf121dcf76d07&text=$address'));
+    String apiKey = dotenv.env['OPEN_ROUTE_SERVICE_KEY']!;
+    var response = await http.get(Uri.parse('https://api.openrouteservice.org/geocode/search?api_key=$apiKey&text=$address'));
     var addressFetched = json.decode(response.body);
     LatLng coordinate = LatLng(
         addressFetched["features"][0]["geometry"]["coordinates"][1],
