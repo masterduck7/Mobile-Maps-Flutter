@@ -51,20 +51,41 @@ class _MapsWidgetState extends State<MapsWidget> {
           List<LatLng> points = snapshot.data!;
           return Scaffold(
             appBar: AppBar(title: const Center(child: Text("Maps"))),
-            body: FlutterMap(
-                options: MapOptions(center: LatLng(-33.420549, -70.581652)),
-                children: [
-                  TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'dev.fleaflet.flutter_map.example',),
-                  MarkerLayer(
-                    markers: [origin, destination],
+            body: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
+                  child: TextFormField(decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Origin"),),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
+                  child: TextFormField(decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Destination"),),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 8, bottom: 8),
+                  child: ElevatedButton(
+                      onPressed: null,
+                      child: Text("Go")
                   ),
-                  PolylineLayer(
-                    polylineCulling: false,
-                    polylines: [
-                      Polyline(points: points, color: Colors.greenAccent, strokeWidth: 10, isDotted: true, borderStrokeWidth: 7, borderColor: Colors.black),
-                    ],
-                  )
-                ],
+                ),
+                Flexible(
+                    child: FlutterMap(
+                      options: MapOptions(center: LatLng(-33.420549, -70.581652)),
+                      children: [
+                        TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'dev.fleaflet.flutter_map.example',),
+                        MarkerLayer(
+                          markers: [origin, destination],
+                        ),
+                        PolylineLayer(
+                          polylineCulling: false,
+                          polylines: [
+                            Polyline(points: points, color: Colors.greenAccent, strokeWidth: 10, isDotted: true, borderStrokeWidth: 7, borderColor: Colors.black),
+                          ],
+                        )
+                      ],
+                    ),
+                )
+              ],
             ),
           );
         }
