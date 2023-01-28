@@ -1,5 +1,5 @@
-name: mobile_maps
-description: A new Flutter project.
+name: mobile_maps_flutter
+description: A mobile maps intergration with Flutter
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -39,6 +39,7 @@ dependencies:
   flutter_map: ^3.1.0
   flutter_map_marker_cluster: ^1.0.1
   latlong2: ^0.8.1
+  open_route_service: ^1.2.2
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
-# Mobile-Maps-Flutter
-A mobile app to use maps with smartphone. Flutter in Android
+# mobile_maps_flutter
+
+A mobile maps intergration with Flutter
 
 ## Getting Started
 
