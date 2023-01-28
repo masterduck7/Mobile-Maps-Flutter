@@ -12,16 +12,16 @@ class MapsWidget extends StatefulWidget {
 }
 
 class _MapsWidgetState extends State<MapsWidget> {
-  static const double startLat = -33.418973;
-  static const double startLng = -70.603883;
-  static const double endLat = -33.421731;
-  static const double endLng = -70.557491;
+  double startLat = -33.418973;
+  double startLng = -70.603883;
+  double endLat = -33.421731;
+  double endLng = -70.557491;
 
   Future<List<LatLng>> _getMarkers() async {
     final OpenRouteService client = OpenRouteService(apiKey: '5b3ce3597851110001cf62488cc3fa394381496ebd8cf121dcf76d07');
     final List<ORSCoordinate> routeCoordinates = await client.directionsRouteCoordsGet(
-      startCoordinate: const ORSCoordinate(latitude: startLat, longitude: startLng),
-      endCoordinate: const ORSCoordinate(latitude: endLat, longitude: endLng),
+      startCoordinate: ORSCoordinate(latitude: startLat, longitude: startLng),
+      endCoordinate: ORSCoordinate(latitude: endLat, longitude: endLng),
     );
 
     List<LatLng> points = [];
@@ -44,6 +44,10 @@ class _MapsWidgetState extends State<MapsWidget> {
         builder: (ctx) => const FlutterLogo()
     );
 
+    getDirections() {
+      setState(() {startLat = -33.452490; startLng = -70.667453;});
+    }
+
     return FutureBuilder(
       future: _getMarkers(),
       builder: (context,snapshot){
@@ -61,11 +65,11 @@ class _MapsWidgetState extends State<MapsWidget> {
                   padding: const EdgeInsets.only(top: 8, bottom: 8),
                   child: TextFormField(decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Destination"),),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 8, bottom: 8),
-                  child: ElevatedButton(
-                      onPressed: null,
-                      child: Text("Go")
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
+                  child: OutlinedButton(
+                      onPressed: () {getDirections();},
+                      child: const Text("Go")
                   ),
                 ),
                 Flexible(
