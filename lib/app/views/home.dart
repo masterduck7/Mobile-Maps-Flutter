@@ -15,6 +15,9 @@ class MapsWidget extends StatefulWidget {
 }
 
 class _MapsWidgetState extends State<MapsWidget> {
+  String originAddress = "";
+  String destinationAddress = "";
+
   double startLat = -33.418973;
   double startLng = -70.603883;
   double endLat = -33.421731;
@@ -38,10 +41,12 @@ class _MapsWidgetState extends State<MapsWidget> {
   Future<LatLng> _fetchDirection(String address) async {
     var response = await http.get(Uri.parse('https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf62488cc3fa394381496ebd8cf121dcf76d07&text=$address'));
     var addressFetched = json.decode(response.body);
-    return LatLng(
+    LatLng coordinate = LatLng(
         addressFetched["features"][0]["geometry"]["coordinates"][1],
         addressFetched["features"][0]["geometry"]["coordinates"][0]
     );
+
+    return coordinate;
   }
 
   @override
@@ -56,9 +61,17 @@ class _MapsWidgetState extends State<MapsWidget> {
         builder: (ctx) => const FlutterLogo()
     );
 
-    getDirections() {
-      //_fetchDirection("Pedro Montt 1100");
-      setState(() {startLat = -33.452490; startLng = -70.667453;});
+    getDirections() async {
+      if (originAddress != "" && destinationAddress != "") {
+        LatLng origin = await _fetchDirection(originAddress);
+        LatLng destination = await _fetchDirection(destinationAddress);
+        setState(() {
+          startLat = origin.latitude;
+          startLng = origin.longitude;
+          endLat = destination.latitude;
+          endLng = destination.longitude;
+        });
+      }
     }
 
     return FutureBuilder(
@@ -72,11 +85,17 @@ class _MapsWidgetState extends State<MapsWidget> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 8),
-                  child: TextFormField(decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Origin"),),
+                  child: TextField(
+                    onChanged: (value) { originAddress= value; },
+                    decoration: const InputDecoration(border: OutlineInputBorder(),labelText: "Origin"),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 8),
-                  child: TextFormField(decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "Destination"),),
+                  child: TextField(
+                    onChanged: (value) { destinationAddress= value; },
+                    decoration: const InputDecoration(border: OutlineInputBorder(),labelText: "Destination"),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 8),
