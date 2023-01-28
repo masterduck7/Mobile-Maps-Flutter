@@ -12,20 +12,25 @@ class MapsWidget extends StatefulWidget {
 }
 
 class _MapsWidgetState extends State<MapsWidget> {
-  Future<List<Marker>> _getMarkers() async {
+  Future<List<LatLng>> _getMarkers() async {
     final OpenRouteService client = OpenRouteService(apiKey: '5b3ce3597851110001cf62488cc3fa394381496ebd8cf121dcf76d07');
 
     // Example coordinates to test between
-    const double startLat = -51.698441;
-    const double startLng = -57.879153;
-    const double endLat = -51.693653;
-    const double endLng = -57.857008;
+    const double startLat = -33.418973;
+    const double startLng = -70.603883;
+    const double endLat = -33.421731;
+    const double endLng = -70.557491;
 
     // Form Route between coordinates
     final List<ORSCoordinate> routeCoordinates = await client.directionsRouteCoordsGet(
       startCoordinate: const ORSCoordinate(latitude: startLat, longitude: startLng),
       endCoordinate: const ORSCoordinate(latitude: endLat, longitude: endLng),
     );
+
+    List<LatLng> points = [];
+    for (var coordinate in routeCoordinates){
+      points.add(LatLng(coordinate.latitude, coordinate.longitude));
+    }
 
     List<Marker> markers = routeCoordinates
         .map((coordinate) =>
@@ -38,7 +43,7 @@ class _MapsWidgetState extends State<MapsWidget> {
         )
     ).toList();
 
-    return markers;
+    return points;
   }
 
   @override
@@ -47,14 +52,19 @@ class _MapsWidgetState extends State<MapsWidget> {
       future: _getMarkers(),
       builder: (context,snapshot){
         if ( snapshot.data != null){
-          List<Marker> markers = snapshot.data!;
+          List<LatLng> points = snapshot.data!;
           return Scaffold(
             appBar: AppBar(title: const Text("Yes")),
             body: FlutterMap(
-                options: MapOptions(center: LatLng(-51.694132, -57.862244)),
+                options: MapOptions(center: LatLng(-33.420549, -70.581652)),
                 children: [
                   TileLayer(urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName: 'dev.fleaflet.flutter_map.example',),
-                  MarkerLayer(markers: markers)
+                  PolylineLayer(
+                    polylineCulling: false,
+                    polylines: [
+                      Polyline(points: points, color: Colors.greenAccent, strokeWidth: 10, isDotted: true, borderStrokeWidth: 7, borderColor: Colors.black),
+                    ],
+                  )
                 ],
             ),
           );
